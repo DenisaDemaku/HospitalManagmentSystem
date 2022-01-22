@@ -1,0 +1,138 @@
+﻿@model PaginatedList<HMS2.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<br />
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-info">Create New</a>
+</p>
+
+<br />
+
+<section class="filter" style="border: 1px solid lightgrey">
+    <div style="background-color: #f9f9f9; border-bottom: 1px solid lightgrey">
+        <button class="btn btn-link" id="filter" style="margin-left:2%; margin-bottom:0.5%; margin-top:0.5%">Filter</button>
+    </div>
+    <div style="background-color:#fff; margin: 25px; display:none" id="filterdiv">
+        <form asp-action="Index" method="post">
+            <div class="form-actions no-color ">
+                <p>
+                    <div class="form-row">
+                        <div class="col-md-3 mb-3">
+                            <label>Find by name: </label>
+                            <input type="text" class="form-control" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Approved or not: </label>
+                            <select class="form-control" name="ConfirmationStatus">
+                                <option value="">Nothing Selected:</option>
+                                <option value="1">Approved</option>
+                                <option value="0">Pending...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-left:2%">
+                        <!-- BUTTONS OF FILTER -->
+                        <a asp-action="Index" class="btn btn-outline-danger">Empty filter</a>
+                        <input type="submit" value="Search" class="btn btn-outline-info" />
+                    </div>
+                </p>
+            </div>
+        </form>
+    </div>
+</section>
+<table class="table table-hover" style="text-align:center">
+    <thead>
+        <tr>
+            <th>
+                Doctor
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["AppoDateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" style="text-decoration: none; color: black">Doctor</a>
+            </th>
+            <th>
+                Confirmation Status
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["CreatedSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" style="text-decoration: none; color: black">Doctor</a>
+
+            </th>
+            <th>
+                Create Date
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Doctor.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfAppointment)
+                </td>
+                <td>
+                    @if (item.ConfirmationStatus)
+                    {
+                        <label class="text-success">Approved</label>
+                    }
+                    else
+                    {
+                        <label class="text-danger">Pending...</label>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-info"><i class="fa fa-edit"></i></a> 
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary"><i class="fa fa-search"></i></a> 
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-outline-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-outline-primary @nextDisabled">
+    Next
+</a>
+
+
+<script>
+    var filtercheck = false;
+    //FILTER DISPLAY
+    $("#filter").click(function () {
+        if (filtercheck) {
+            document.getElementById("filterdiv").style.display = 'none';
+            filtercheck = false;
+        } else {
+            document.getElementById("filterdiv").style.display = '';
+            filtercheck = true;
+        }
+    });
+</script>
